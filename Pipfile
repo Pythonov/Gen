@@ -7,6 +7,8 @@ name = "pypi"
 fastapi-offline = {path = "I:/Pimonov/FastAPI/FastAPI_wheels/fastapi_offline-1.2.1-py3-none-any.whl"}
 aiofiles = {path = "I:/Pimonov/FastAPI/FastAPI_wheels/aiofiles-0.5.0-py3-none-any.whl"}
 tortoise-orm = "*"
+uvicorn = {extras = ["all"], version = "*"}
+jinja2 = "*"
 
 [dev-packages]
 

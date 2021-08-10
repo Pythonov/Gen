@@ -1,7 +1,8 @@
 from fastapi_offline import FastAPIOffline
+from fastapi import Body
 from src.models.models import *
 from tortoise.contrib.fastapi import register_tortoise
-from tortoise import Tortoise, models
+from tortoise import Tortoise
 from tortoise.contrib.pydantic import pydantic_model_creator
 from pydantic import BaseModel, ValidationError
 
@@ -24,6 +25,31 @@ query_pydantic = pydantic_model_creator(
     BaseForQueries, name="BaseForQueries", exclude_readonly=True
 )
 
+FILTER_Q_EXAMPLE = {
+    "filters_q": [
+        {
+            "name": "имя",
+            "value": "Василий",
+            "union_start": "True"
+        },
+        {
+            "name": "месяц рождения",
+            "value": "август",
+            "union_end": "True",
+            "condition": "|"
+        },
+        {
+            "name": "фамилия",
+            "value": "Иванов",
+            "union_start": "True"
+        },
+        {
+            "name": "месяц рождения",
+            "value": "декабрь",
+            "union_end": "True"
+        }
+    ]}
+
 
 class SeparatorPyd(BaseModel):
     target_class: str
@@ -34,12 +60,12 @@ def parse_args(input_JSON: dict):
     try:
         input_data = SeparatorPyd.parse_obj(input_JSON)
         data = input_data.data
-        target_calss = input_data.target_class
+        target_class = input_data.target_class
     except ValidationError as e:
-        target_calss = "Wrong data, motherfucker!"
+        target_class = "Wrong data, motherfucker!"
         data = e
 
-    return target_calss, data
+    return target_class, data
 
 
 """
@@ -72,8 +98,9 @@ Data for "people"
 
 
 @app.post(f"/add")
-async def post(cp: query_pydantic):
+async def post(cp: query_pydantic, body=Body(..., examples={"first": FILTER_Q_EXAMPLE})):
     target_class, data = parse_args(cp.dict())
+    a = body
     objIn_pydantic = pydantic_model_creator(
         models_dict[target_class],
         name=target_class,
@@ -86,7 +113,7 @@ async def post(cp: query_pydantic):
 
 
 @app.post("/tie")
-async def tie(gen_id: int, pers_id: int):
+async def tie(gen_id: list, pers_id: int):
     objIn_pydantic = pydantic_model_creator(
         models_dict["people_genes"],
         name="People_genes",
@@ -138,3 +165,26 @@ async def get(cp: query_pydantic):
         models_dict[target_class].get(**data)
     )
     return {"status": "Ok", "data": response}
+
+
+"""
+Пример для удаления:
+{
+  "target_class": "genes",
+  "data": {
+"list_to_delete": [{"id": 1}, {"id": 2}]
+}
+}
+        
+"""
+
+
+@app.delete(f'/del_object')
+async def get(cp: query_pydantic):
+    target_class, data = parse_args(cp.dict())
+    deleted_objects = []
+    for obj in data['list_to_delete']:
+        obj_to_delete = await models_dict[target_class].get(**obj)
+        await obj_to_delete.delete()
+        deleted_objects.append(str(obj_to_delete))
+    return {'status': 'ok', 'data': f'{deleted_objects} was deleted'}
