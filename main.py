@@ -66,16 +66,12 @@ async def create_single(item: Item = Body(
                 "genes_ids": genes
             }
             body = Item(target_class="people", data=data)
-            # {
-            #     "target_class": "people",
-
-            # }
             await tie_single(body)
 
     except Exception as e:
         error_data[f'error in {data}'] = str(e)
         status = "not ok"
-    return {"status": "Ok", "data": response}
+    return {"status": status, "data": response}
 
 
 @app.post('/create_many', name="Создать несколько объектов")
