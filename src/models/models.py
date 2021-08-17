@@ -1,41 +1,32 @@
 """
 
 You have to register all new models
-in models_dict in format
-{'name_for_json': name of class}
+and created pydantic objects
+in adapter_dict
 
 """
-
 from tortoise import models, fields
-
-
-class BaseForQueries(models.Model):
-    target_class = fields.CharField(max_length=100)
-    data = fields.JSONField()
-
-
-class PeoplesGenes(models.Model):
-    people = fields.ForeignKeyField("models.People")
-    genes = fields.ForeignKeyField("models.Genes")
-
-    class Meta:
-        table = "people_genes"
+from tortoise.contrib.pydantic import pydantic_model_creator
 
 
 class Genes(models.Model):
-    id = fields.IntField(pk=True)
+    id = fields.IntField(pk=True, index=True)
     gene_code = fields.CharField(max_length=50, unique=False)
-    comment = fields.TextField()
     rs_code = fields.CharField(max_length=25, unique=False)
     poly_type = fields.CharField(max_length=50, unique=False)
     poly_status = fields.CharField(max_length=50, unique=False)
     interpretation = fields.TextField()
+    comment = fields.TextField()
+    people: fields.ManyToManyRelation["People"] = fields.ManyToManyField(
+        'models.People', related_name='genes', through='genes_people',
+    )
 
     def __str__(self):
-        return self.gene_code
+        return self.id
 
     class Meta:
-        ordering = ["gene_code"]
+        ordering = ["id"]
+        unique_together = (("rs_code", "gene_code", "poly_type"),)
 
 
 class People(models.Model):
@@ -48,17 +39,31 @@ class People(models.Model):
     date_of_analysis = fields.CharField(max_length=50, unique=False)
     reason_of_analysis = fields.TextField()
     comment = fields.TextField(null=True)
-    genes: fields.ManyToManyRelation["Genes"] = fields.ManyToManyField("models.Genes")
-
-    def __str__(self):
-        return self.id
+    genes: fields.ManyToManyRelation[Genes]
 
     class Meta:
         ordering = ["date_of_analysis"]
 
+    def __str__(self):
+        return f'{self.id}_{self.lab_number}'
 
-models_dict = {
-    "people": People,
-    "genes": Genes,
-    "people_genes": PeoplesGenes,
+
+obj_In_genes = pydantic_model_creator(Genes, name='genesIn', exclude_readonly=True)
+obj_genes = pydantic_model_creator(Genes, name='genes')
+obj_In_people = pydantic_model_creator(People, name='peopleIn', exclude_readonly=True)
+obj_people = pydantic_model_creator(People, name='people')
+
+adapter_dict = {
+    "models": {
+        "people": People,
+        "genes": Genes,
+    },
+    "objects_in": {
+        "people": obj_In_people,
+        "genes": obj_In_genes,
+    },
+    "objects_out": {
+        "people": obj_people,
+        "genes": obj_genes,
+    },
 }
