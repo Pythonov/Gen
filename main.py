@@ -114,6 +114,9 @@ async def create_many(item: Item = Body(
     }
 
 
+
+
+
 @app.post('/get_all', name="Получить все объекты")
 async def get_all(item: Item = Body(
     ...,
@@ -197,6 +200,29 @@ async def delete(item: Item = Body(
         "deleted": f'{num_deleted_items}/{num_of_items}',
         "error_data": error_data,
     }
+
+
+@app.post('/get_all_depend', name="Получить все объекты со связями")
+async def get_all_depend(item: Item = Body(
+    ...,
+    examples={
+        "get_all_persons": {
+            "description": "Get persons",
+            "value": GET_ALL_PEOPLE
+        }
+    }
+)):
+    target_class = "people"
+    response = await adapter_dict['models'][target_class].all().prefetch_related("genes")
+    num_of_items = len(response)
+    for i, x in enumerate(response):
+        list_for_person = x.genes.related_objects
+        response[i] = response[i].__dict__
+        response[i].pop("_genes")
+        response[i].pop("_partial")
+        response[i]["genes"] = list_for_person
+
+    return {"status": "Ok", "data": response, "num_of_items": num_of_items}
 
 
 @app.post('/tie', name="Объединить один объект другими")
