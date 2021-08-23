@@ -119,7 +119,8 @@ ADD_PERSON_EXAMPLE = {
         "material_type": "type",
         "date_of_analysis": "date",
         "reason_of_analysis": "reason",
-        "comment": "comment text"
+        "comment": "comment text",
+        "genes": []
     }
 }
 

@@ -71,7 +71,7 @@ async def create_single(item: Item = Body(
     except Exception as e:
         error_data[f'error in {data}'] = str(e)
         status = "not ok"
-    return {"status": status, "data": response}
+    return {"status": status, "data": response, "error_data": error_data}
 
 
 @app.post('/create_many', name="Создать несколько объектов")
