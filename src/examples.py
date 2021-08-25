@@ -6,7 +6,8 @@ ADD_GENE_EXAMPLE = {
         "rs_code": "3",
         "poly_type": "3",
         "poly_status": "3",
-        "interpretation": "interpretation text"
+        "interpretation": "interpretation text",
+        "protein": "protein text"
     }
 }
 
@@ -49,7 +50,8 @@ ADD_MANY_GENES_EXAMPLE = {
             "rs_code": "1",
             "poly_type": "1",
             "poly_status": "1",
-            "interpretation": "interpretation text"
+            "interpretation": "interpretation text",
+            "protein": "protein text"
         },
         {
             "gene_code": "2",
@@ -57,7 +59,8 @@ ADD_MANY_GENES_EXAMPLE = {
             "rs_code": "2",
             "poly_type": "2",
             "poly_status": "2",
-            "interpretation": "interpretation text"
+            "interpretation": "interpretation text",
+            "protein": "protein text"
         },
         {
             "gene_code": "3",
@@ -65,7 +68,8 @@ ADD_MANY_GENES_EXAMPLE = {
             "rs_code": "3",
             "poly_type": "3",
             "poly_status": "3",
-            "interpretation": "interpretation text"
+            "interpretation": "interpretation text",
+            "protein": "protein text"
         }
     ]
   }

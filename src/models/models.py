@@ -16,6 +16,7 @@ class Genes(models.Model):
     poly_type = fields.CharField(max_length=50, unique=False)
     poly_status = fields.CharField(max_length=50, unique=False)
     interpretation = fields.TextField()
+    protein = fields.TextField()
     comment = fields.TextField()
     people: fields.ManyToManyRelation["People"] = fields.ManyToManyField(
         'models.People', related_name='genes', through='genes_people',
