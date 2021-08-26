@@ -11,7 +11,7 @@ from pydantic import BaseModel, validator, ValidationError
 # Initial config
 app = FastAPIOffline(title='Gen App')
 
-origins = [""]
+origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
