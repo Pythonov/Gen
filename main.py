@@ -1,4 +1,4 @@
-from starlette.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from src.models.models import *
 from src.examples import *
 from fastapi_offline import FastAPIOffline
