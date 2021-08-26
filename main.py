@@ -1,3 +1,4 @@
+from starlette.middleware.cors import CORSMiddleware
 from src.models.models import *
 from src.examples import *
 from fastapi_offline import FastAPIOffline
@@ -10,9 +11,18 @@ from pydantic import BaseModel, validator, ValidationError
 # Initial config
 app = FastAPIOffline(title='Gen App')
 
+origins = [""]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=[""],
+    allow_headers=["*"],
+)
+
 register_tortoise(
     app,
-    db_url='sqlite://db.sqlite3',
+    db_url="postgres://postgres:admin@127.0.0.1:5432/gen",
     modules={'models': ['src.models.models']},
     generate_schemas=True,
     add_exception_handlers=True,
