@@ -1,3 +1,4 @@
+from starlette.middleware.cors import CORSMiddleware
 from src.models.models import *
 from src.examples import *
 from fastapi_offline import FastAPIOffline
@@ -9,6 +10,15 @@ from pydantic import BaseModel, validator, ValidationError
 
 # Initial config
 app = FastAPIOffline(title='Gen App')
+
+origins = [""]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=[""],
+    allow_headers=["*"],
+)
 
 register_tortoise(
     app,
